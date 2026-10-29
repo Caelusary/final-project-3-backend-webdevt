@@ -1,5 +1,5 @@
+import { existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import * as client from '../../client/src/lib/constants.js';
 import { CATEGORIES, CONNECTIVITY, LAYOUTS, RESOLUTIONS, SWITCH_TYPES } from '../src/models/Product.js';
 import { ATTEMPT_REASONS, DECLINE_REASONS, MAX_ATTEMPTS, ORDER_STATUSES, PAYMENT_METHODS } from '../src/models/Order.js';
 import { ADMIN_AREAS, VEHICLES } from '../src/models/User.js';
@@ -13,8 +13,12 @@ import { PHOTO_VERSION } from '../src/seed/data.js';
 import { MAX_PHOTOS } from '../src/features/reviews/controller.js';
 
 // The client keeps its own copy of these for display and form checks (it deploys separately, so it
-// can't import server files). This fails the build the moment the two drift apart.
-describe('client constants match the server', () => {
+// can't import server files). This fails the build the moment the two drift apart. The client is its own repo, so
+// this runs when it's cloned next to this one and is skipped otherwise (CI checks out this repo alone).
+const CLIENT_CONSTANTS = new URL('../../final-project-3-frontend-webdevt/src/lib/constants.js', import.meta.url);
+const client = existsSync(CLIENT_CONSTANTS) ? await import(CLIENT_CONSTANTS.href) : null;
+
+describe.skipIf(!client)('client constants match the server', () => {
   it('has the same enums', () => {
     expect(client.CATEGORIES).toEqual(CATEGORIES);
     expect(client.CONNECTIVITY).toEqual(CONNECTIVITY);
