@@ -1,0 +1,14 @@
+node_modules/
+coverage/
+.env
+.env.*
+!.env.example
+uploads/
+.vscode/
+.idea/
+.claude/
+.eslintcache
+*.log
+.DS_Store
+Thumbs.db
+~$*
