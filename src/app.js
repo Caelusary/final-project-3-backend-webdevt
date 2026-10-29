@@ -51,6 +51,16 @@ export function createApp() {
     const ok = mongoose.connection.readyState === 1;
     res.status(ok ? 200 : 503).json({ ok });
   });
+  // What someone sees opening the API's own address: which service this is and where the site lives, instead of a
+  // 404. Outside /api, so the proxy check doesn't turn them away.
+  app.get('/', (req, res) => {
+    res.json({
+      name: 'Loadout API',
+      status: mongoose.connection.readyState === 1 ? 'ok' : 'database unavailable',
+      site: (process.env.CLIENT_URL ?? 'http://localhost:5173').split(',')[0].trim(),
+      health: '/api/health',
+    });
+  });
   if (process.env.PROXY_SECRET) app.use('/api', requireProxy(process.env.PROXY_SECRET));
   if (!isCloudinaryEnabled()) app.use('/api/files', express.static(UPLOAD_DIR, { index: false }));
   app.use('/api', apiLimiter);
