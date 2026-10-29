@@ -24,3 +24,15 @@ describe('health check', () => {
     expect(res.body).toEqual({ ok: false });
   });
 });
+
+describe('API root', () => {
+  it('names the service and points to the site and the health check', async () => {
+    vi.spyOn(mongoose.connection, 'readyState', 'get').mockReturnValue(1);
+
+    const res = await request(app).get('/');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ name: 'Loadout API', status: 'ok', health: '/api/health' });
+    expect(res.body.site).toMatch(/^https?:\/\//);
+  });
+});
